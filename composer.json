@@ -1,0 +1,40 @@
+{
+    "name": "trinityrank/sitemap",
+    "description": "Website XML sitemap",
+    "keywords": [
+        "laravel",
+        "sitemap",
+        "trinityrank"
+    ],
+    "homepage": "https://github.com/trinity-rank/sitemap",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "TrinityRank DevTeam",
+            "email": "trinitydevbg@gmail.com",
+            "role": "Team"
+        }
+    ],
+    "require": {
+        "php": "^7.4|^8.0",
+        "spatie/laravel-sitemap": "^6.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Trinityrank\\Sitemap\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Trinityrank\\Sitemap\\SitemapServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
