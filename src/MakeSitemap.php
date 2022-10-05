@@ -63,13 +63,15 @@ class MakeSitemap
                 });
 
                 $sitemapItems = implode('', $sitemapItems->toArray());
-                $sitemap = $sitemap . $sitemapItems . '</urlset>' ;
 
                 if (self::$index > 0) {
                     // Continue loop if multiple Models need to be inside one sitemap
                     if ($merge === "--first" || $merge === "--next") {
                         continue;
                     }
+
+                    $sitemap = $sitemap . $sitemapItems . '</urlset>' ;
+
                     // Control line - write sitemaps in terminal
                     $that->info($lang . "/sitemap/". $item['sitemap-name'] ."_sitemap.xml");
 

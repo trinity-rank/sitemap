@@ -29,26 +29,8 @@ You need to publish file from package:
 
 And change settings array according to your needs
 
-### Step 2: Usage
 
-Add traits to fix missing scopes
-
-- For Categories
-    ```shell
-    use Trinityrank\Sitemap\Traits\ScopeSitemapCategory;
-    ...
-    use ScopeSitemapCategory
-    ```
-
-- For User class
-    ```shell
-    use Trinityrank\Sitemap\Traits\ScopeSitemapAuthor;
-    ...
-    use ScopeSitemapAuthor
-    ```
-    
-
-## Step 3: Create sitemap
+## Step 2: Create sitemap
 
 - Now it is time to create your sitemap
     ```shell
