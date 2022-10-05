@@ -1,4 +1,4 @@
-# Draft Status
+# TrinityRank Sitemap
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/trinityrank/sitemap.svg?style=flat-square)](https://packagist.org/packages/trinityrank/sitemap)
 [![Total Downloads](https://img.shields.io/packagist/dt/trinityrank/sitemap.svg?style=flat-square)](https://packagist.org/packages/trinityrank/sitemap)
