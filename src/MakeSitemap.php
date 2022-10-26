@@ -9,10 +9,11 @@ class MakeSitemap
     protected static $index;
     protected static $files = [];
     protected static $latestNews = [];
+    protected static $sumCategories = [];
 
     public static function generate($that, $config)
     {
-        $lang_default = config('app.locale') ?? "us";
+        $lang_default = config('app.locale') ?? 'us';
         $languages = config('app.locales') ?? [$lang_default];
 
         // For each Language create separate sitemap
@@ -26,7 +27,7 @@ class MakeSitemap
                 $merge = $item['merge'] ?? false;
 
                 // Init sitemap creation
-                if ($merge === false || $merge === "--first") {
+                if ($merge === false || $merge === '--first') {
                     //$sitemap = Sitemap::create();
 
                     $sitemap = "<?xml version='1.0' encoding='UTF-8'?> \n" .
@@ -36,21 +37,42 @@ class MakeSitemap
                 }
 
                 // List all posts and pages from given model class
-                $sitemapItems= $item['model']::status()->language($language)->publishDate()->get()->map(function ($post, $key) use ($sitemap, $lang, $item) {
+                $sitemapItems = $item['model']::status()->language($language)->publishDate()->get()->map(function ($post, $key) use ($sitemap, $lang, $item) {
                     // Get category (if exists)
                     $category = $post->categories ? $post->categories->first()->slug : '';
                     // here we correct home page link
-                    $slug = ($post->slug == "/") ? "" : $post->slug;
+                    $slug = ($post->slug == '/') ? '' : $post->slug;
                     // Define complete slug
                     $item_slug = str_replace(['$lang', '$category', '$slug'], [$lang, $category, $slug], $item['slug']);
 
-                    $postSitemap = "\t <url> \n";
-                    $postSitemap  .= "\t \t <loc>". Str::beforeLast(route('home'), '/') . $item_slug . "</loc> \n";
-                    $postSitemap  .= "\t \t <lastmod>" . $post->updated_at->toW3cString() . "</lastmod> \n";
-                    $postSitemap  .= "\t \t <priority>0.8</priority> \n";
-                    $postSitemap  .= "\t </url> \n";
+                    // is Parent Category visible for sitemap
+                    $parentShow = isset($item['parent-show']) && $item['parent-show'] === 'true' ? true : false;
 
-                    // Increment index
+                    $postSitemap = '';
+
+                    if ($key === 0 && $post->getTable() == 'categories') {
+                        if (isset($item['manual'])) {
+                            $postSitemap = "\t <url> \n";
+                            $postSitemap .= "\t \t <loc>" . route('home') . $item['manual'] . "</loc> \n";
+                            $postSitemap .= "\t \t <lastmod>" . now()->toW3cString() . "</lastmod> \n";
+                            $postSitemap .= "\t \t <priority>0.8</priority> \n";
+                            $postSitemap .= "\t </url> \n";
+                        }
+                    }
+
+                    if ($post->getTable() == 'categories') {
+                        if (\App\Categories\Category::find($post->id)->children()->exists() && !$parentShow) {
+                            return 'ignore';
+                        }
+                    };
+
+                    $postSitemap = $postSitemap;
+                    $postSitemap .= "\t <url> \n";
+                    $postSitemap .= "\t \t <loc>" . Str::beforeLast(route('home'), '/') . $item_slug . "</loc> \n";
+                    $postSitemap .= "\t \t <lastmod>" . $post->updated_at->toW3cString() . "</lastmod> \n";
+                    $postSitemap .= "\t \t <priority>0.8</priority> \n";
+                    $postSitemap .= "\t </url> \n";
+
                     self::$index++;
 
                     if ($post->type === "App\Articles\Types\News"
@@ -60,27 +82,39 @@ class MakeSitemap
                     }
 
                     return $postSitemap;
+                })->filter(function ($value) {
+                    if ($value !== 'ignore') {
+                        return $value;
+                    }
                 });
 
-                $sitemapItems = implode('', $sitemapItems->toArray());
-
                 if (self::$index > 0) {
-                    // Continue loop if multiple Models need to be inside one sitemap
-                    if ($merge === "--first" || $merge === "--next") {
+                    if ($merge === '--first' || $merge === '--next') {
+                        self::$sumCategories = collect(self::$sumCategories)->concat($sitemapItems);
+
                         continue;
                     }
+
+                    if ($merge === '--last') {
+                        self::$sumCategories = collect(self::$sumCategories)->concat($sitemapItems);
+
+                        $sitemapItems = self::$sumCategories;
+                        self::$sumCategories = [];
+                    }
+
+                    $sitemapItems = implode('', $sitemapItems->toArray());
 
                     $sitemap = $sitemap . $sitemapItems . '</urlset>' ;
 
                     // Control line - write sitemaps in terminal
-                    $that->info($lang . "/sitemap/". $item['sitemap-name'] ."_sitemap.xml");
+                    $that->info($lang . '/sitemap/' . $item['sitemap-name'] . '_sitemap.xml');
 
                     if (!file_exists(public_path($lang . '/sitemap/'))) {
                         mkdir(public_path($lang . '/sitemap/'), 0777, true);
                     }
-                    file_put_contents(public_path($lang . '/sitemap/'. $item['sitemap-name'] .'_sitemap.xml'), $sitemap);
+                    file_put_contents(public_path($lang . '/sitemap/' . $item['sitemap-name'] . '_sitemap.xml'), $sitemap);
 
-                    array_push(self::$files, $lang . '/sitemap/'. $item['sitemap-name'] .'_sitemap.xml');
+                    array_push(self::$files, $lang . '/sitemap/' . $item['sitemap-name'] . '_sitemap.xml');
                 }
             }
         }

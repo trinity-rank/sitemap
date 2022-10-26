@@ -41,7 +41,7 @@ class GenerateSitemap extends Command
         MakeSitemap::generate($this, [
             [
                 'model' => Blog::class,
-                'slug' => '$lang/$category/$slug',
+                'slug' => '$lang/blog/$slug',
                 'sitemap-name' => 'blog'
             ],
             [
@@ -56,7 +56,7 @@ class GenerateSitemap extends Command
             ],
             [
                 'model' => MoneyPage::class,
-                'slug' => '$lang/$category/$slug',
+                'slug' => '$lang/best/$slug',
                 'sitemap-name' => 'product'
             ],
             [
@@ -74,27 +74,28 @@ class GenerateSitemap extends Command
                 'slug' => '$lang/$slug',
                 'sitemap-name' => 'category',
                 'merge' => '--first',
-                'manual' => ['blog']
+                'manual' => 'blog'
             ],
             [
                 'model' => NewsCategory::class,
-                'slug' => '$lang/news/$slug',
+                'slug' => '$lang/$slug',
                 'sitemap-name' => 'category',
                 'merge' => '--next',
-                'manual' => ['news']
+                'manual' => 'news'
             ],
             [
                 'model' => ReviewPageCategory::class,
-                'slug' => '$lang/reviews/$slug',
+                'slug' => '$lang/$slug',
                 'sitemap-name' => 'category',
                 'merge' => '--next',
-                'manual' => ['reviews']
+                'manual' => 'reviews'
             ],
             [
                 'model' => MoneyPageCategory::class,
                 'slug' => '$lang/$slug',
                 'sitemap-name' => 'category',
-                'merge' => '--last'
+                'merge' => '--last',
+                //'parent-show' => 'true'
             ],
         ]);
     }
