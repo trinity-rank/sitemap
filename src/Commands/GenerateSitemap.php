@@ -38,6 +38,30 @@ class GenerateSitemap extends Command
      */
     public function handle()
     {
+        /*
+            |--------------------------------------------------------------------------
+            | Properties
+            |--------------------------------------------------------------------------
+            | $category
+            | $parentCategory
+            | $slug
+            */
+
+        /*
+           |--------------------------------------------------------------------------
+           | Keys configuration
+           |--------------------------------------------------------------------------
+           |
+           * All Items:
+           | 'model',
+           | 'slug',
+           | 'sitemap-name',
+           * Only for categories:
+           | 'merge' ,
+           | 'manual',
+           | 'parent-show'
+           */
+
         MakeSitemap::generate($this, [
             [
                 'model' => Blog::class,

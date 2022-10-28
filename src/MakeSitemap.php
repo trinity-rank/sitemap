@@ -41,9 +41,17 @@ class MakeSitemap
                     // Get category (if exists)
                     $category = $post->categories ? $post->categories->first()->slug : '';
                     // here we correct home page link
+
+                    if ($post->categories !== null) {
+                        $parentCategory = $post->categories->first()->parent ? $post->categories->first()->parent->slug : '';
+                    } else {
+                        $parentCategory = '';
+                    }
+
+                    // here we correct home page link
                     $slug = ($post->slug == '/') ? '' : $post->slug;
                     // Define complete slug
-                    $item_slug = str_replace(['$lang', '$category', '$slug'], [$lang, $category, $slug], $item['slug']);
+                    $item_slug = str_replace(['$lang', '$parentCategory', '$category', '$slug'], [$lang, $parentCategory, $category, $slug], $item['slug']);
 
                     // is Parent Category visible for sitemap
                     $parentShow = isset($item['parent-show']) && $item['parent-show'] === 'true' ? true : false;
