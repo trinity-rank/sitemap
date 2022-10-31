@@ -48,6 +48,10 @@ class MakeSitemap
                         $parentCategory = '';
                     }
 
+                    if ($post->getTable() == 'categories') {
+                        $parentCategory = $post->parent()->exists() ? $post->parent->slug : null;
+                    };
+
                     // here we correct home page link
                     $slug = ($post->slug == '/') ? '' : $post->slug;
                     // Define complete slug
@@ -73,6 +77,10 @@ class MakeSitemap
                             return 'ignore';
                         }
                     };
+
+                    if (Str::contains($item_slug, '//')) {
+                        $item_slug = Str::before($item_slug, '//') . '/' . Str::after($item_slug, '//');
+                    }
 
                     $postSitemap = $postSitemap;
                     $postSitemap .= "\t <url> \n";
