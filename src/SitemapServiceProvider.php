@@ -17,6 +17,8 @@ class SitemapServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__ ."/Commands/GenerateSitemap.php" =>
                 'app/Console/Commands/GenerateSitemap.php',
+                __DIR__ ."/Providers/MacrosServiceProvider.php" =>
+                'app/Providers/MacrosServiceProvider.php',
                 __DIR__ ."/Assets/sitemap-style.xsl" =>
                 'public/sitemap-style.xsl',
             ], "generate-sitemap-files");
