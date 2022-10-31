@@ -29,8 +29,17 @@ You need to publish file from package:
 
 And change settings array according to your needs
 
+## Step 2: Registrate provider
 
-## Step 2: Create sitemap
+- Registrate MacrosServiceProvider in config/app.php
+    ```shell
+    /*
+        * Application Service Providers...
+    */
+    MacrosServiceProvider::class
+    ```
+
+## Step 3: Create sitemap
 
 - Now it is time to create your sitemap
     ```shell
