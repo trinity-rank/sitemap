@@ -40,14 +40,13 @@ class MakeSitemap
                 $sitemapItems = $item['model']::status()->language($language)->publishDate()->get()->map(function ($post, $key) use ($sitemap, $lang, $item) {
                     // Get category (if exists)
                     $category = $post->categories ? $post->categories->first()->slug : '';
-                    // here we correct home page link
 
+                    // creation of parent category
                     if ($post->categories !== null) {
                         $parentCategory = $post->categories->first()->parent ? $post->categories->first()->parent->slug : '';
                     } else {
                         $parentCategory = '';
                     }
-
                     if ($post->getTable() == 'categories') {
                         $parentCategory = $post->parent()->exists() ? $post->parent->slug : null;
                     };
@@ -60,8 +59,10 @@ class MakeSitemap
                     // is Parent Category visible for sitemap
                     $parentShow = isset($item['parent-show']) && $item['parent-show'] === 'true' ? true : false;
 
+                    // sitemap init
                     $postSitemap = '';
 
+                    // add category index sitemap from manual
                     if ($key === 0 && $post->getTable() == 'categories') {
                         if (isset($item['manual'])) {
                             $postSitemap = "\t <url> \n";
@@ -72,16 +73,19 @@ class MakeSitemap
                         }
                     }
 
+                    // ignore parent categories to not show
                     if ($post->getTable() == 'categories') {
                         if (\App\Categories\Category::find($post->id)->children()->exists() && !$parentShow) {
                             return 'ignore';
                         }
                     };
 
+                    // clear slug
                     if (Str::contains($item_slug, '//')) {
                         $item_slug = Str::before($item_slug, '//') . '/' . Str::after($item_slug, '//');
                     }
 
+                    // adding sitemap items
                     $postSitemap = $postSitemap;
                     $postSitemap .= "\t <url> \n";
                     $postSitemap .= "\t \t <loc>" . Str::beforeLast(route('home'), '/') . $item_slug . "</loc> \n";
@@ -89,8 +93,10 @@ class MakeSitemap
                     $postSitemap .= "\t \t <priority>0.8</priority> \n";
                     $postSitemap .= "\t </url> \n";
 
+                    // increase the index
                     self::$index++;
 
+                    // adding items to news sitemap
                     if ($post->type === "App\Articles\Types\News"
                         &&
                         $post->updated_at->diffInDays(now()) < 2) {
@@ -105,12 +111,14 @@ class MakeSitemap
                 });
 
                 if (self::$index > 0) {
+                    // concat category items in one file
                     if ($merge === '--first' || $merge === '--next') {
                         self::$sumCategories = collect(self::$sumCategories)->concat($sitemapItems);
 
                         continue;
                     }
 
+                    // close category items in one file
                     if ($merge === '--last') {
                         self::$sumCategories = collect(self::$sumCategories)->concat($sitemapItems);
 
@@ -118,18 +126,24 @@ class MakeSitemap
                         self::$sumCategories = [];
                     }
 
+                    // join to array
                     $sitemapItems = implode('', $sitemapItems->toArray());
 
+                    // finish sitemap file
                     $sitemap = $sitemap . $sitemapItems . '</urlset>' ;
 
                     // Control line - write sitemaps in terminal
                     $that->info($lang . '/sitemap/' . $item['sitemap-name'] . '_sitemap.xml');
 
+                    // create dir for sitemap
                     if (!file_exists(public_path($lang . '/sitemap/'))) {
                         mkdir(public_path($lang . '/sitemap/'), 0777, true);
                     }
+
+                    // put files
                     file_put_contents(public_path($lang . '/sitemap/' . $item['sitemap-name'] . '_sitemap.xml'), $sitemap);
 
+                    // create index sitemap
                     array_push(self::$files, $lang . '/sitemap/' . $item['sitemap-name'] . '_sitemap.xml');
                 }
             }

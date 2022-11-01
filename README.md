@@ -36,7 +36,7 @@ And change settings array according to your needs
     /*
         * Application Service Providers...
     */
-    MacrosServiceProvider::class
+    App\Providers\MacrosServiceProvider::class
     ```
 
 ## Step 3: Create sitemap
