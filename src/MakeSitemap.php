@@ -57,7 +57,7 @@ class MakeSitemap
                     $item_slug = str_replace(['$lang', '$parentCategory', '$category', '$slug'], [$lang, $parentCategory, $category, $slug], $item['slug']);
 
                     // is Parent Category visible for sitemap
-                    $parentShow = isset($item['parent-show']) && $item['parent-show'] === 'true' ? true : false;
+                    $parentShow = isset($item['parent-show']) && $item['parent-show'] === true ? true : false;
 
                     // sitemap init
                     $postSitemap = '';
@@ -66,7 +66,7 @@ class MakeSitemap
                     if ($key === 0 && $post->getTable() == 'categories') {
                         if (isset($item['manual'])) {
                             $postSitemap = "\t <url> \n";
-                            $postSitemap .= "\t \t <loc>" . route('home') . $item['manual'] . "</loc> \n";
+                            $postSitemap .= "\t \t <loc>" . route('home') . $item['manual'] . '/' . "</loc> \n";
                             $postSitemap .= "\t \t <lastmod>" . now()->toW3cString() . "</lastmod> \n";
                             $postSitemap .= "\t \t <priority>0.8</priority> \n";
                             $postSitemap .= "\t </url> \n";
@@ -88,7 +88,7 @@ class MakeSitemap
                     // adding sitemap items
                     $postSitemap = $postSitemap;
                     $postSitemap .= "\t <url> \n";
-                    $postSitemap .= "\t \t <loc>" . Str::beforeLast(route('home'), '/') . $item_slug . "</loc> \n";
+                    $postSitemap .= "\t \t <loc>" . Str::beforeLast(route('home'), '/') . $item_slug . '/' . "</loc> \n";
                     $postSitemap .= "\t \t <lastmod>" . $post->updated_at->toW3cString() . "</lastmod> \n";
                     $postSitemap .= "\t \t <priority>0.8</priority> \n";
                     $postSitemap .= "\t </url> \n";
@@ -155,7 +155,7 @@ class MakeSitemap
 
     public static function test($config)
     {
-        $lang_default = config('app.locale') ?? "us";
+        $lang_default = config('app.locale') ?? 'us';
         $languages = config('app.locales') ?? [$lang_default];
 
         $langsUrlCollection = collect($languages)->map(function ($language) use ($config, $lang_default) {
@@ -166,7 +166,7 @@ class MakeSitemap
             foreach ($config as $item) {
                 $urlResolver = $item['model']::status()->language($language)->publishDate()->get()->map(function ($post) use ($lang, $item) {
                     $category = $post->categories ? $post->categories->first()->slug : '';
-                    $slug = ($post->slug == "/") ? "" : $post->slug;
+                    $slug = ($post->slug == '/') ? '' : $post->slug;
                     $item_slug = str_replace(['$lang', '$category', '$slug'], [$lang, $category, $slug], $item['slug']);
 
                     return Str::beforeLast(route('home'), '/') . ($item_slug);
@@ -189,7 +189,7 @@ class MakeSitemap
 
         foreach ($newsList as $news) {
             $sitemapNews .= "\t <url>\n" .
-                            "\t \t <loc>". Str::beforeLast(route('home'), '/') . $news->slug . "</loc>\n" .
+                            "\t \t <loc>" . Str::beforeLast(route('home'), '/') . $news->slug . '/' . "</loc>\n" .
                             "\t \t <news:news> \n" .
                             "\t \t <news:publication> \n" .
                             "\t \t \t <news:name>" . $news->title . "</news:name> \n" .
@@ -197,11 +197,11 @@ class MakeSitemap
                             "\t \t </news:publication> \n" .
                             "\t \t <news:publication_date>" . $news->created_at->toW3cString() . "</news:publication_date> \n" .
                             "\t \t \t <news:title>" . $news->title . "</news:title>\n" .
-                            "\t \t </news:news> \n".
+                            "\t \t </news:news> \n" .
                             "\t </url> \n";
         }
 
-        $sitemapNews .= "</urlset>";
+        $sitemapNews .= '</urlset>';
 
         file_put_contents(public_path('sitemap-news.xml'), $sitemapNews);
     }
@@ -214,12 +214,12 @@ class MakeSitemap
 
         foreach ($files as $file) {
             $sitemapIndex .= "\t <sitemap> \n";
-            $sitemapIndex  .= "\t \t <loc>". Str::beforeLast(route('home'), '/') . $file . "</loc> \n";
-            $sitemapIndex  .= "\t \t <lastmod>" . now()->toW3cString() . "</lastmod> \n";
-            $sitemapIndex  .= "\t </sitemap> \n";
+            $sitemapIndex .= "\t \t <loc>" . Str::beforeLast(route('home'), '/') . $file . '/' . "</loc> \n";
+            $sitemapIndex .= "\t \t <lastmod>" . now()->toW3cString() . "</lastmod> \n";
+            $sitemapIndex .= "\t </sitemap> \n";
         }
 
-        $sitemapIndex  .= '</sitemapindex>';
+        $sitemapIndex .= '</sitemapindex>';
 
         file_put_contents(public_path('sitemap.xml'), $sitemapIndex);
     }

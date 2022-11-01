@@ -119,7 +119,7 @@ class GenerateSitemap extends Command
                 'slug' => '$lang/$slug',
                 'sitemap-name' => 'category',
                 'merge' => '--last',
-                //'parent-show' => 'true'
+                //'parent-show' => true
             ],
         ]);
     }

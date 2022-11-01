@@ -35,6 +35,10 @@ class MacrosServiceProvider extends ServiceProvider
                     return $query->where('show_author', 1);
                 }
 
+                if (!Schema::hasColumn($this->from, 'status')) {
+                    return $query;
+                }
+
                 return $query->where('status', 1);
             });
         });
