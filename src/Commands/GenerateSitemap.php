@@ -40,16 +40,17 @@ class GenerateSitemap extends Command
     {
         /*
             |--------------------------------------------------------------------------
-            | Properties
+            | Url Properties
             |--------------------------------------------------------------------------
-            | $category
+            | $lang --- default value
+            | $category --- use only for single pages
             | $parentCategory
             | $slug
             */
 
         /*
            |--------------------------------------------------------------------------
-           | Keys configuration
+           | Keys Configuration
            |--------------------------------------------------------------------------
            |
            * All Items:
@@ -98,21 +99,19 @@ class GenerateSitemap extends Command
                 'slug' => '$lang/$slug',
                 'sitemap-name' => 'category',
                 'merge' => '--first',
-                'manual' => 'blog'
+                'manual' => ['blog', 'news', 'reviews']
             ],
             [
                 'model' => NewsCategory::class,
                 'slug' => '$lang/$slug',
                 'sitemap-name' => 'category',
                 'merge' => '--next',
-                'manual' => 'news'
             ],
             [
                 'model' => ReviewPageCategory::class,
                 'slug' => '$lang/$slug',
                 'sitemap-name' => 'category',
                 'merge' => '--next',
-                'manual' => 'reviews'
             ],
             [
                 'model' => MoneyPageCategory::class,

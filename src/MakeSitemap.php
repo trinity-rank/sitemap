@@ -42,14 +42,19 @@ class MakeSitemap
                     $category = $post->categories ? $post->categories->first()->slug : '';
 
                     // creation of parent category
-                    if ($post->categories !== null) {
-                        $parentCategory = $post->categories->first()->parent ? $post->categories->first()->parent->slug : '';
+                    if (method_exists($post, 'parent')) {
+                        if ($post->categories !== null) {
+                            $parentCategory = $post->categories->first()->parent ? $post->categories->first()->parent->slug : '';
+                        } else {
+                            $parentCategory = '';
+                        }
+
+                        if ($post->getTable() == 'categories') {
+                            $parentCategory = $post->parent()->exists() ? $post->parent->slug : null;
+                        };
                     } else {
-                        $parentCategory = '';
+                        $parentCategory = null;
                     }
-                    if ($post->getTable() == 'categories') {
-                        $parentCategory = $post->parent()->exists() ? $post->parent->slug : null;
-                    };
 
                     // here we correct home page link
                     $slug = ($post->slug == '/') ? '' : $post->slug;
@@ -63,10 +68,10 @@ class MakeSitemap
                     $postSitemap = '';
 
                     // add category index sitemap from manual
-                    if ($key === 0 && $post->getTable() == 'categories') {
-                        if (isset($item['manual'])) {
-                            $postSitemap = "\t <url> \n";
-                            $postSitemap .= "\t \t <loc>" . route('home') . $item['manual'] . '/' . "</loc> \n";
+                    if ($key === 0 && isset($item['manual'])) {
+                        foreach ($item['manual'] as $manual) {
+                            $postSitemap .= "\t <url> \n";
+                            $postSitemap .= "\t \t <loc>" . route('home') . $manual . '/' . "</loc> \n";
                             $postSitemap .= "\t \t <lastmod>" . now()->toW3cString() . "</lastmod> \n";
                             $postSitemap .= "\t \t <priority>0.8</priority> \n";
                             $postSitemap .= "\t </url> \n";
@@ -75,14 +80,19 @@ class MakeSitemap
 
                     // ignore parent categories to not show
                     if ($post->getTable() == 'categories') {
-                        if (\App\Categories\Category::find($post->id)->children()->exists() && !$parentShow) {
-                            return 'ignore';
+                        if (method_exists($post, 'children')) {
+                            if (\App\Categories\Category::find($post->id)->children()->exists() && !$parentShow) {
+                                return 'ignore';
+                            }
                         }
                     };
 
                     // clear slug
                     if (Str::contains($item_slug, '//')) {
                         $item_slug = Str::before($item_slug, '//') . '/' . Str::after($item_slug, '//');
+                    }
+                    if ($item_slug === '/') {
+                        $item_slug = '';
                     }
 
                     // adding sitemap items
