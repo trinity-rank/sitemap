@@ -37,7 +37,7 @@ class MakeSitemap
                 }
 
                 // List all posts and pages from given model class
-                $sitemapItems = $item['model']::status()->language($language)->publishDate()->get()->map(function ($post, $key) use ($sitemap, $lang, $item) {
+                $sitemapItems = $item['model']::status()->language($language)->publishDate()->get()->map(function ($post, $key) use ($language, $lang, $item) {
                     // Get category (if exists)
                     $category = $post->categories ? $post->categories->first()->slug : '';
 
