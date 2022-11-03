@@ -70,11 +70,20 @@ class MakeSitemap
                     // add category index sitemap from manual
                     if ($key === 0 && isset($item['manual'])) {
                         foreach ($item['manual'] as $manual) {
-                            $postSitemap .= "\t <url> \n";
-                            $postSitemap .= "\t \t <loc>" . route('home') . $manual . '/' . "</loc> \n";
-                            $postSitemap .= "\t \t <lastmod>" . now()->toW3cString() . "</lastmod> \n";
-                            $postSitemap .= "\t \t <priority>0.8</priority> \n";
-                            $postSitemap .= "\t </url> \n";
+                            if (Str::between($manual, '/', '/') == Str::after($manual, '/') && $lang == '') {
+                                $postSitemap .= "\t <url> \n";
+                                $postSitemap .= "\t \t <loc>" . Str::beforeLast(route('home'), '/') . $manual . '/' . "</loc> \n";
+                                $postSitemap .= "\t \t <lastmod>" . now()->toW3cString() . "</lastmod> \n";
+                                $postSitemap .= "\t \t <priority>0.8</priority> \n";
+                                $postSitemap .= "\t </url> \n";
+                            } elseif (Str::between($manual, '/', '/') === Str::after($lang, '/')) {
+                                $postSitemap .= "\t <url> \n";
+                                $postSitemap .= "\t \t <loc>" . Str::beforeLast(route('home'), '/') . $manual . '/' . "</loc> \n";
+                                $postSitemap .= "\t \t <lastmod>" . now()->toW3cString() . "</lastmod> \n";
+                                $postSitemap .= "\t \t <priority>0.8</priority> \n";
+                                $postSitemap .= "\t </url> \n";
+                            }
+                            continue;
                         }
                     }
 

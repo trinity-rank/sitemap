@@ -99,7 +99,7 @@ class GenerateSitemap extends Command
                 'slug' => '$lang/$slug',
                 'sitemap-name' => 'category',
                 'merge' => '--first',
-                'manual' => ['blog', 'news', 'reviews']
+                'manual' => ['/blog', '/news', '/reviews', '/ca/blog', '/ca/reviews']
             ],
             [
                 'model' => NewsCategory::class,
