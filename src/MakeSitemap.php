@@ -96,6 +96,15 @@ class MakeSitemap
                         }
                     };
 
+                    // ignore users which doesn't have posts
+                    if ($post->getTable() == 'users') {
+                        if (method_exists($post, 'pages') && method_exists($post, 'articles')) {
+                            if ($post->pages()->language($language)->count() == 0 && $post->articles()->language($language)->count() == 0) {
+                                return 'ignore';
+                            }
+                        }
+                    };
+
                     // clear slug
                     if (Str::contains($item_slug, '//')) {
                         $item_slug = Str::before($item_slug, '//') . '/' . Str::after($item_slug, '//');
