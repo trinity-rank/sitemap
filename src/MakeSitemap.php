@@ -48,6 +48,7 @@ class MakeSitemap
                         if (method_exists($post->categories->first(), 'parent')) {
                             $parentCategory = $post->categories->first()->parent ? $post->categories->first()->parent->slug : null;
                         }
+                        $parentCategory = null;
                     } else {
                         $parentCategory = null;
                     }
