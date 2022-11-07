@@ -43,15 +43,11 @@ class MakeSitemap
 
                     // creation of parent category
                     if (method_exists($post, 'parent')) {
-                        if ($post->categories !== null) {
-                            $parentCategory = $post->categories->first()->parent ? $post->categories->first()->parent->slug : '';
-                        } else {
-                            $parentCategory = '';
+                        $parentCategory = $post->parent()->exists() ? $post->parent->slug : null;
+                    } elseif (method_exists($post, 'categories')) {
+                        if (method_exists($post->categories->first(), 'parent')) {
+                            $parentCategory = $post->categories->first()->parent ? $post->categories->first()->parent->slug : null;
                         }
-
-                        if ($post->getTable() == 'categories') {
-                            $parentCategory = $post->parent()->exists() ? $post->parent->slug : null;
-                        };
                     } else {
                         $parentCategory = null;
                     }
