@@ -240,7 +240,7 @@ class MakeSitemap
 
         foreach ($files as $file) {
             $sitemapIndex .= "\t <sitemap> \n";
-            $sitemapIndex .= "\t \t <loc>" . Str::beforeLast(route('home'), '/') . $file . '/' . "</loc> \n";
+            $sitemapIndex .= "\t \t <loc>" . Str::beforeLast(route('home'), '/') . $file . "</loc> \n";
             $sitemapIndex .= "\t \t <lastmod>" . now()->toW3cString() . "</lastmod> \n";
             $sitemapIndex .= "\t </sitemap> \n";
         }
