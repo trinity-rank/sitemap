@@ -18,6 +18,9 @@ class MakeSitemap
 
         // For each Language create separate sitemap
         foreach ($languages as $language) {
+            self::$files = [];
+            self::$latestNews = [];
+
             // Generate lang sufix in path name
             $lang = ($lang_default == $language) ? '' : '/' . $language;
 
@@ -173,10 +176,10 @@ class MakeSitemap
                     array_push(self::$files, $lang . '/sitemap/' . $item['sitemap-name'] . '_sitemap.xml');
                 }
             }
-        }
 
-        self::createNewsSitemap(self::$latestNews);
-        self::createIndexSitemap(self::$files);
+            self::createNewsSitemap(self::$latestNews, $lang);
+            self::createIndexSitemap(self::$files, $lang);
+        }
     }
 
     public static function test($config)
@@ -207,7 +210,7 @@ class MakeSitemap
         return $langsUrlCollection;
     }
 
-    private static function createNewsSitemap($newsList)
+    private static function createNewsSitemap($newsList, $lang)
     {
         $sitemapNews = "<?xml version='1.0' encoding='UTF-8'?> \n" .
         "<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' 
@@ -229,10 +232,10 @@ class MakeSitemap
 
         $sitemapNews .= '</urlset>';
 
-        file_put_contents(public_path('sitemap-news.xml'), $sitemapNews);
+        file_put_contents(public_path($lang . '/sitemap-news.xml'), $sitemapNews);
     }
 
-    private static function createIndexSitemap($files)
+    private static function createIndexSitemap($files, $lang)
     {
         $sitemapIndex = "<?xml version='1.0' encoding='UTF-8'?> \n" .
         "<?xml-stylesheet type='text/xsl' href='/sitemap-style.xsl'?> \n" .
@@ -247,6 +250,6 @@ class MakeSitemap
 
         $sitemapIndex .= '</sitemapindex>';
 
-        file_put_contents(public_path('sitemap.xml'), $sitemapIndex);
+        file_put_contents(public_path($lang . '/sitemap.xml'), $sitemapIndex);
     }
 }
