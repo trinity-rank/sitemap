@@ -110,7 +110,7 @@ class MakeSitemap
                     if (Str::contains($item_slug, '//')) {
                         $item_slug = Str::before($item_slug, '//') . '/' . Str::after($item_slug, '//');
                     }
-                    if ($item_slug === '/') {
+                    if ($item_slug === '/' || $item_slug === $lang . '/') {
                         $item_slug = '';
                     }
 
