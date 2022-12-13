@@ -234,7 +234,12 @@ class MakeSitemap
 
         $sitemapNews .= '</urlset>';
 
-        file_put_contents(public_path($lang . '/sitemap-news.xml'), $sitemapNews);
+        // create dir for news sitemap
+        if (!file_exists(public_path($lang . '/news/'))) {
+            mkdir(public_path($lang . '/news/'), 0777, true);
+        }
+
+        file_put_contents(public_path($lang . '/news/sitemap.xml'), $sitemapNews);
     }
 
     private static function createIndexSitemap($files, $lang)
