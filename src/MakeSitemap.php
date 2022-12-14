@@ -130,7 +130,9 @@ class MakeSitemap
                     // adding items to news sitemap
                     if ($post->type === "App\Articles\Types\News"
                         &&
-                        $post->updated_at->diffInDays(now()) < 2) {
+                        $post->created_at->diffInDays(now()) < 2
+                    ) {
+                        $post->sluggish = $item_slug;
                         array_push(self::$latestNews, $post);
                     }
 
@@ -179,7 +181,14 @@ class MakeSitemap
                 }
             }
 
-            self::createNewsSitemap(self::$latestNews, $lang);
+            $filterManual = collect($config)->filter(function ($value, $key) {
+                return array_key_exists('manual', $value);
+            })->flatten()->toArray();
+
+            if (in_array($lang . '/' . 'news', $filterManual)) {
+                self::createNewsSitemap(self::$latestNews, $lang);
+            }
+
             self::createIndexSitemap(self::$files, $lang);
         }
     }
@@ -220,7 +229,7 @@ class MakeSitemap
 
         foreach ($newsList as $news) {
             $sitemapNews .= "\t <url>\n" .
-                            "\t \t <loc>" . Str::beforeLast(route('home'), '/') . $news->slug . '/' . "</loc>\n" .
+                            "\t \t <loc>" . Str::beforeLast(route('home'), '/') . $news->sluggish . '/' . "</loc>\n" .
                             "\t \t <news:news> \n" .
                             "\t \t <news:publication> \n" .
                             "\t \t \t <news:name>" . $news->title . "</news:name> \n" .
