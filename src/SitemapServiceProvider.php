@@ -23,6 +23,8 @@ class SitemapServiceProvider extends ServiceProvider
                 'public/sitemap-style.xsl',
             ], "generate-sitemap-files");
         }
+
+        $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
     }
 
     /**
