@@ -3,6 +3,7 @@
 namespace Trinityrank\Sitemap;
 
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class MakeSitemap
 {
@@ -34,7 +35,7 @@ class MakeSitemap
                     //$sitemap = Sitemap::create();
 
                     $sitemap = "<?xml version='1.0' encoding='UTF-8'?> \n" .
-                    "<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' xmlns:xhtml='http://www.w3.org/1999/xhtml' xmlns:image='http://www.google.com/schemas/sitemap-image/1.1'> \n";
+                        "<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' xmlns:xhtml='http://www.w3.org/1999/xhtml' xmlns:image='http://www.google.com/schemas/sitemap-image/1.1'> \n";
 
                     self::$index = 0;
                 }
@@ -128,10 +129,8 @@ class MakeSitemap
                     self::$index++;
 
                     // adding items to news sitemap
-                    if ($post->type === "App\Articles\Types\News"
-                        &&
-                        $post->created_at->diffInDays(now()) < 2
-                    ) {
+                    $post_created_at = Carbon::parse($post->created_at);
+                    if ($post->type === "App\Articles\Types\News" && Carbon::now()->diffInHours($post_created_at) < 48) {
                         $post->sluggish = $item_slug;
                         array_push(self::$latestNews, $post);
                     }
@@ -163,7 +162,7 @@ class MakeSitemap
                     $sitemapItems = implode('', $sitemapItems->toArray());
 
                     // finish sitemap file
-                    $sitemap = $sitemap . $sitemapItems . '</urlset>' ;
+                    $sitemap = $sitemap . $sitemapItems . '</urlset>';
 
                     // Control line - write sitemaps in terminal
                     $that->info($lang . '/sitemap/' . $item['sitemap-name'] . '_sitemap.xml');
@@ -224,21 +223,21 @@ class MakeSitemap
     private static function createNewsSitemap($newsList, $lang)
     {
         $sitemapNews = "<?xml version='1.0' encoding='UTF-8'?> \n" .
-        "<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9' 
+            "<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'
                  xmlns:news='http://www.google.com/schemas/sitemap-news/0.9'> \n";
 
         foreach ($newsList as $news) {
             $sitemapNews .= "\t <url>\n" .
-                            "\t \t <loc>" . Str::beforeLast(route('home'), '/') . $news->sluggish . '/' . "</loc>\n" .
-                            "\t \t <news:news> \n" .
-                            "\t \t <news:publication> \n" .
-                            "\t \t \t <news:name>" . $news->title . "</news:name> \n" .
-                            "\t \t \t <news:language>" . $news->multilang_language . "</news:language> \n" .
-                            "\t \t </news:publication> \n" .
-                            "\t \t <news:publication_date>" . $news->created_at->toW3cString() . "</news:publication_date> \n" .
-                            "\t \t \t <news:title>" . $news->title . "</news:title>\n" .
-                            "\t \t </news:news> \n" .
-                            "\t </url> \n";
+                "\t \t <loc>" . Str::beforeLast(route('home'), '/') . $news->sluggish . '/' . "</loc>\n" .
+                "\t \t <news:news> \n" .
+                "\t \t <news:publication> \n" .
+                "\t \t \t <news:name>" . $news->title . "</news:name> \n" .
+                "\t \t \t <news:language>" . $news->multilang_language . "</news:language> \n" .
+                "\t \t </news:publication> \n" .
+                "\t \t <news:publication_date>" . $news->created_at->toW3cString() . "</news:publication_date> \n" .
+                "\t \t \t <news:title>" . $news->title . "</news:title>\n" .
+                "\t \t </news:news> \n" .
+                "\t </url> \n";
         }
 
         $sitemapNews .= '</urlset>';
@@ -250,8 +249,8 @@ class MakeSitemap
     private static function createIndexSitemap($files, $lang)
     {
         $sitemapIndex = "<?xml version='1.0' encoding='UTF-8'?> \n" .
-        "<?xml-stylesheet type='text/xsl' href='/sitemap-style.xsl'?> \n" .
-        "<sitemapindex xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'> \n";
+            "<?xml-stylesheet type='text/xsl' href='/sitemap-style.xsl'?> \n" .
+            "<sitemapindex xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'> \n";
 
         foreach ($files as $file) {
             $sitemapIndex .= "\t <sitemap> \n";
